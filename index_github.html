@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remy - GitHub Pages优化版</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* 保持原有样式，但添加GitHub Pages特定样式 */
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --accent-color: #FF9800;
+            --light-color: #F5F5F5;
+            --dark-color: #333333;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .github-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #24292e;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+            position: relative;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f9fff9;
+        }
+        
+        .upload-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        
+        /* 原有样式保持不变 */
+        .hero-section {
+            background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+            border-color: #45a049;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- GitHub Pages徽章 -->
+    <div class="github-badge">
+        <i class="fab fa-github"></i> GitHub Pages
+    </div>
+    
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2" style="color: #4CAF50;"></i>
+                <span style="color: #4CAF50;">Remy</span> <small class="text-muted">GitHub Pages版</small>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Remy - GitHub Pages优化版</h1>
+                    <p class="hero-subtitle">专门针对GitHub Pages环境优化的智能冰箱伴侣</p>
+                    <div class="mt-4">
+                        <span class="badge bg-light text-dark me-2">✅ FileReader支持</span>
+                        <span class="badge bg-light text-dark me-2">✅ 图片上传</span>
+                        <span class="badge bg-light text-dark">✅ GitHub Pages兼容</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3038/3038793.png" alt="智能冰箱" class="img-fluid" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 演示区域 -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">GitHub Pages图片上传演示</h2>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-5">
+                            <h3 class="card-title mb-4 text-center">
+                                <i class="fas fa-camera me-2"></i>上传冰箱照片
+                            </h3>
+                            <p class="text-muted text-center mb-4">
+                                请上传一张冰箱内部的照片，Remy将自动识别其中的食材
+                                <br><small>此版本专门针对GitHub Pages环境优化</small>
+                            </p>
+                            
+                            <div class="upload-area" id="uploadArea">
+                                <span class="upload-status" id="uploadStatus">等待上传</span>
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3" style="color: #4CAF50;"></i>
+                                <h4>拖放图片或点击上传</h4>
+                                <p class="text-muted">支持 JPG、PNG 格式，最大 5MB</p>
+                                <input type="file" id="imageInput" accept="image/*" class="d-none">
+                                <p class="mt-3">
+                                    <small class="text-muted">或使用示例图片：</small>
+                                    <button class="btn btn-outline-primary btn-sm ms-2" id="useSample1">
+                                        <i class="fas fa-image me-1"></i>示例1
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm ms-2" id="useSample2">
+                                        <i class="fas fa-image me-1"></i>示例2
+                                    </button>
+                                </p>
+                            </div>
+                            
+                            <div id="previewContainer" class="mt-4 text-center" style="display: none;">
+                                <img id="imagePreview" class="img-fluid rounded" style="max-height: 300px; max-width: 100%;" alt="图片预览">
+                                <p class="mt-3 text-success" id="successMessage">
+                                    <i class="fas fa-check-circle me-1"></i>图片上传成功！
+                                </p>
+                                <button class="btn btn-outline-secondary btn-sm" id="reuploadBtn">
+                                    <i class="fas fa-redo me-1"></i>重新上传
+                                </button>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <button class="btn btn-primary" id="nextStep1" disabled>
+                                    下一步 <i class="fas fa-arrow-right ms-1"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- 调试信息 -->
+                            <div class="debug-info mt-4">
+                                <h6>GitHub Pages调试信息：</h6>
+                                <div id="debugOutput">
+                                    等待操作...
+                                </div>
+                                <button class="btn btn-sm btn-outline-info mt-2" onclick="runDebugTests()">
+                                    <i class="fas fa-bug me-1"></i>运行调试测试
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术信息 -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-5">GitHub Pages兼容性说明</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-check-circle text-success me-2"></i>已支持的功能</h5>
+                            <ul>
+                                <li>客户端图片上传（FileReader API）</li>
+                                <li>拖放文件上传</li>
+                                <li>示例图片加载</li>
+                                <li>图片预览显示</li>
+                                <li>基本文件验证（类型、大小）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-info-circle text-warning me-2"></i>GitHub Pages限制</h5>
+                            <ul>
+                                <li>纯静态环境，无服务器端处理</li>
+                                <li>无法保存上传的文件</li>
+                                <li>AI识别功能需要模拟实现</li>
+                                <li>某些高级API可能受限</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="https://github.com/aydx-offline/Remy" class="btn btn-outline-dark" target="_blank">
+                    <i class="fab fa-github me-2"></i>查看GitHub仓库
+                </a>
+                <a href="simple_upload.html" class="btn btn-outline-primary ms-2">
+                    <i class="fas fa-flask me-2"></i>测试简化版
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- GitHub Pages专用修复版 -->
+    <script src="github_pages_fix.js"></script>
+    
+    <!-- 额外调试功能 -->
+    <script>
+        // 调试函数
+        function runDebugTests() {
+            const debugOutput = document.getElementById('debugOutput');
+            debugOutput.innerHTML = '<div class="text-info">运行测试中...</div>';
+            
+            setTimeout(() => {
+                let html = '<div class="mb-2"><strong>测试结果：</strong></div>';
+                
+                // 测试1: FileReader支持
+                const fileReaderSupported = !!window.FileReader;
+                html += `<div>FileReader: <span class="${fileReaderSupported ? 'text-success' : 'text-danger'}">${fileReaderSupported ? '✓ 支持' : '✗ 不支持'}</span></div>`;
+                
+                // 测试2: File API支持
+                const fileAPISupported = !!window.File;
+                html += `<div>File API: <span class="${fileAPISupported ? 'text-success' : 'text-danger'}">${fileAPISupported ? '✓ 支持' : '✗ 不支持'}</span></div>`;
+                
+                // 测试3: FormData支持
+                const formDataSupported = !!window.FormData;
+                html += `<div>FormData: <span class="${formDataSupported ? 'text-success' : 'text-danger'}">${formDataSupported ? '✓ 支持' : '✗ 不支持'}</span></div>`;
+                
+                // 测试4: 当前环境
+                const isGitHubPages = window.location.hostname.includes('github.io');
+                html += `<div>GitHub Pages: <span class="${isGitHubPages ? 'text-success' : 'text-warning'}">${isGitHubPages ? '✓ 是' : '✗ 否'}</span></div>`;
+                
+                // 测试5: HTTPS
+                const isHTTPS = window.location.protocol === 'https:';
+                html += `<div>HTTPS: <span class="${isHTTPS ? 'text-success' : 'text-warning'}">${isHTTPS ? '✓ 是' : '✗ 否'}</span></div>`;
+                
+                debugOutput.innerHTML = html;
+            }, 500);
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('GitHub Pages优化版页面加载完成');
+            
+            // 更新上传状态显示
+            const uploadStatus = document.getElementById('uploadStatus');
+            if (uploadStatus) {
+                uploadStatus.textContent = '就绪';
+                uploadStatus.style.color = '#4CAF50';
+            }
+            
+            // 初始运行调试测试
+            setTimeout(runDebugTests, 1000);
+        });
+    </script>
+</body>
+</html>
