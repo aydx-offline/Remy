@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remy - 最小化上传测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        #uploadArea {
+            border: 3px dashed #4CAF50;
+            border-radius: 15px;
+            padding: 50px;
+            margin: 30px auto;
+            max-width: 600px;
+            cursor: pointer;
+            background: #f9fff9;
+            transition: all 0.3s;
+        }
+        
+        #uploadArea:hover {
+            background: #e8f5e9;
+            border-color: #2196F3;
+        }
+        
+        #preview {
+            max-width: 400px;
+            max-height: 300px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Remy - 最小化上传测试</h1>
+    <p class="status info">这个版本去除了所有复杂逻辑，只测试最基本功能</p>
+    
+    <div id="uploadArea">
+        <h2>📷 点击这里上传图片</h2>
+        <p>最简单的上传测试，无外部依赖</p>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    </div>
+    
+    <div>
+        <button onclick="useSample1()">使用示例图片1</button>
+        <button onclick="useSample2()">使用示例图片2</button>
+        <button onclick="resetUpload()">重置</button>
+    </div>
+    
+    <img id="preview" style="display: none;" alt="图片预览">
+    
+    <div id="status" class="status info">等待操作...</div>
+    
+    <div class="log" id="log">
+        日志输出...
+    </div>
+    
+    <script>
+        // 最简单的日志函数
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            const now = new Date().toLocaleTimeString('zh-CN', {hour12: false});
+            logDiv.innerHTML += `[${now}] ${msg}<br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(msg);
+        }
+        
+        // 更新状态
+        function updateStatus(msg, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = msg;
+            statusDiv.className = `status ${type}`;
+            log(`状态: ${msg}`);
+        }
+        
+        // 初始化
+        function init() {
+            log('页面加载完成，开始初始化...');
+            
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (!uploadArea || !fileInput) {
+                updateStatus('错误：找不到元素', 'error');
+                return;
+            }
+            
+            // 最简单的点击事件
+            uploadArea.onclick = function() {
+                log('uploadArea被点击');
+                fileInput.click();
+            };
+            
+            // 最简单的文件选择事件
+            fileInput.onchange = function(e) {
+                log('文件选择变化');
+                if (e.target.files && e.target.files[0]) {
+                    handleFile(e.target.files[0]);
+                }
+            };
+            
+            updateStatus('就绪，请点击上传区域', 'success');
+            log('初始化完成');
+        }
+        
+        // 处理文件
+        function handleFile(file) {
+            log(`处理文件: ${file.name} (${file.type}, ${file.size} bytes)`);
+            
+            // 基本验证
+            if (!file.type.startsWith('image/')) {
+                updateStatus('错误：请选择图片文件', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                updateStatus('错误：文件太大（>5MB）', 'error');
+                return;
+            }
+            
+            updateStatus('正在读取图片...', 'info');
+            
+            // 使用FileReader
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                log('✅ 文件读取成功');
+                showPreview(e.target.result);
+                updateStatus('上传成功！', 'success');
+            };
+            
+            reader.onerror = function(e) {
+                log(`❌ 文件读取失败: ${e.target.error ? e.target.error.name : '未知错误'}`);
+                updateStatus('读取失败', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // 显示预览
+        function showPreview(imageData) {
+            log('显示图片预览');
+            const preview = document.getElementById('preview');
+            preview.src = imageData;
+            preview.style.display = 'block';
+            
+            // 更新上传区域
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.innerHTML = `
+                <h2>✅ 图片已上传</h2>
+                <p>点击下方按钮重新上传</p>
+                <button onclick="resetUpload()">重新上传</button>
+            `;
+        }
+        
+        // 示例图片
+        function useSample1() {
+            log('使用示例图片1');
+            updateStatus('正在加载示例图片...', 'info');
+            
+            // 使用可靠的图片URL
+            const imgUrl = 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400&h=300&fit=crop&q=80';
+            
+            const img = new Image();
+            img.onload = function() {
+                log('✅ 示例图片1加载成功');
+                showPreview(imgUrl);
+                updateStatus('示例图片加载成功！', 'success');
+            };
+            img.onerror = function() {
+                log('❌ 示例图片1加载失败');
+                updateStatus('示例图片加载失败', 'error');
+            };
+            img.src = imgUrl;
+        }
+        
+        function useSample2() {
+            log('使用示例图片2');
+            updateStatus('正在加载示例图片...', 'info');
+            
+            // 使用另一个可靠的图片URL
+            const imgUrl = 'https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?w=400&h=300&fit=crop&q=80';
+            
+            const img = new Image();
+            img.onload = function() {
+                log('✅ 示例图片2加载成功');
+                showPreview(imgUrl);
+                updateStatus('示例图片加载成功！', 'success');
+            };
+            img.onerror = function() {
+                log('❌ 示例图片2加载失败');
+                updateStatus('示例图片加载失败', 'error');
+            };
+            img.src = imgUrl;
+        }
+        
+        // 重置
+        function resetUpload() {
+            log('重置上传');
+            location.reload();
+        }
+        
+        // 页面加载后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+        
+        // 全局调试
+        window.debug = function() {
+            log('=== 调试信息 ===');
+            log(`URL: ${location.href}`);
+            log(`User Agent: ${navigator.userAgent}`);
+            log(`FileReader: ${!!window.FileReader}`);
+            log(`File: ${!!window.File}`);
+            log(`点击测试: ${document.getElementById('uploadArea') ? '元素存在' : '元素不存在'}`);
+            log('=== 调试结束 ===');
+        };
+        
+        // 自动运行调试
+        setTimeout(function() {
+            log('自动运行调试...');
+            window.debug();
+        }, 1000);
+    </script>
+</body>
+</html>
