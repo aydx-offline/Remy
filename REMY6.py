@@ -24,7 +24,7 @@ def save_memory(content):
 
 # --- 1. 配置 Gemini API ---
 # 建议实际开发时将 Key 存入 st.secrets 或环境变量
-API_KEY = "AIzaSyAndZewKfOFF70RdtDGU19_CvqyaL7phbw"
+API_KEY = ""    # 输入你的API
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel('gemini-3.1-flash-image-preview')
 
