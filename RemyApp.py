@@ -8,7 +8,12 @@ import os
 
 MEMORY_FILE = "remy_memory.md"
 
-# 初始化记忆文件
+# --- 配置 Gemini API ---
+API_KEY = ""    # 输入你的API
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+model = genai.GenerativeModel('gemini-3.1-flash-image-preview')
+
+# --- 初始化记忆文件 ---
 if not os.path.exists(MEMORY_FILE):
     with open(MEMORY_FILE, "w", encoding="utf-8") as f:
         f.write("# REMY 的主厨备忘录\n\n- 暂时还没有记录您的偏好哦。")
@@ -21,18 +26,11 @@ def save_memory(content):
     with open(MEMORY_FILE, "w", encoding="utf-8") as f:
         f.write(content)
 
-
-# --- 1. 配置 Gemini API ---
-# 建议实际开发时将 Key 存入 st.secrets 或环境变量
-API_KEY = ""    # 输入你的API
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-3.1-flash-image-preview')
-
 # --- 2. 网页配置与温馨 UI 风格注入 ---
 st.set_page_config(page_title="REMY | 你冰箱里的料理鼠王", page_icon="🍳", layout="wide", initial_sidebar_state="expanded")
 
 def refresh_suggestions():
-    # 1. 获取当前库存快照
+    # 1. 库存照片
     current_items = []
     for name, info in st.session_state.inventory.items():
         current_items.append(f"{name} (剩余{info['quantity']}{info['unit']}, { (info['expiry_date'] - st.session_state.current_date).days }天后过期)")
@@ -42,7 +40,7 @@ def refresh_suggestions():
     # 2. 读取用户偏好
     user_prefs = read_memory()
 
-    # 3. 构建文本提示词
+    # 3. 文本提示词
     update_prompt = f"""
     你是一位温馨、懂生活的家庭大厨。现在冰箱的【实时库存】如下：{inventory_str}。
     
@@ -72,21 +70,21 @@ def refresh_suggestions():
         raw_text = response.text.strip().strip('```json').strip('```').strip()
         data = json.loads(raw_text)
         
-        # 4. 更新全局状态
+    # 4. 更新全局状态
         st.session_state.recipes = data.get("recipes", [])
         st.session_state.shopping_list = data.get("shopping", {})
     except Exception as e:
         st.error(f"联动更新失败")
 
 
-# 核心 CSS 改造区
+# CSS风格
 st.markdown("""
 <style>
-    /* 1. 引入字体 */
+    /* 引入字体 */
     @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600&display=swap');
     @import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css');
 
-    /* 2. 精准全局字体设置 (取消了 span 和 div 的强制覆盖，修复了箭头变成文字的 BUG) */
+    /* 精准全局字体设置*/
     .stApp { background-color: #FAF7F2 !important; }
     p, label, li, h2, h3, h4, h5, h6 { 
         color: #5C4D4D !important; 
@@ -121,7 +119,6 @@ st.markdown("""
         position: relative;
     }
 
-    /* 把截图里顶部那条碍眼的白色系统导航栏变透明，完美融入燕麦色背景 */
     [data-testid="stHeader"] {
         background-color: transparent !important;
     }
@@ -142,7 +139,7 @@ st.markdown("""
         max-width: 1200px !important; 
     }
 
-    /* 4. 侧边栏整体美化 */
+    /* 侧边栏整体美化 */
     [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
     [data-testid="stSidebar"] [data-testid="stCaptionContainer"] p {
         font-family: 'LXGW WenKai Lite', sans-serif !important;
@@ -155,7 +152,7 @@ st.markdown("""
         opacity: 1 !important;
     }
 
-    /* 5. 美化上传框 (File Uploader)：变得软糯、字号变小 */
+    /* 美化上传框 */
     [data-testid="stFileUploader"] section {
         background-color: #FCFAF7 !important;
         border: 2px dashed #DCCDBA !important;
@@ -167,10 +164,10 @@ st.markdown("""
         color: #8D7B68 !important;
     }
     [data-testid="stFileUploader"] small {
-        display: none !important; /* 隐藏讨厌的 "Limit 200MB per file" 英文提示 */
+        display: none !important;
     }
 
-    /* 6. 美化侧边栏的专属按钮：不抢戏，更温柔 */
+    /* 美化侧边栏按钮 */
     [data-testid="stSidebar"] .stButton > button {
         background-color: transparent !important; 
         color: #D47B55 !important;
@@ -185,19 +182,20 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0 4px 12px rgba(212, 123, 85, 0.3) !important; 
     }
-
+    
+    /* tab设置 */
     div[data-baseweb="tab-list"] {
         display: flex !important;
-        width: 100% !important; /* 强制占满全宽 */
+        width: 100% !important;
     }
-
+    
     button[data-baseweb="tab"] {
-        flex: 1 !important; /* 👈 核心魔法：让三个 Tab 绝对平分、各占 1/3 */
+        flex: 1 !important;
         display: flex !important;
-        justify-content: center !important; /* 让文字水平居中 */
-        align-items: center !important; /* 让文字垂直居中 */
-        padding: 1.2rem 0 !important; /* 把左右固定的 3rem 去掉，交给 flex 自动分配空间 */
-        min-width: 0 !important; /* 去掉之前固定的 180px，防止在小屏幕上溢出 */
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 1.2rem 0 !important;
+        min-width: 0 !important;
         border-radius: 25px 25px 0 0 !important;
         background-color: transparent !important;
         border: none !important;
@@ -205,14 +203,13 @@ st.markdown("""
         text-align: center !important;
     }
     
-    /* 🌟 核心修复：强制穿透，放大 Tab 内部的真正文字容器！ */
     button[data-baseweb="tab"] p, 
     button[data-baseweb="tab"] span, 
     button[data-baseweb="tab"] div {
         font-family: 'Nunito', 'LXGW WenKai Lite', sans-serif !important;
-        font-size: 1.3rem !important; /* 保持你调整好的 1.3rem */
-        font-weight: 600 !important; /* 稍微加粗一点，更有主菜单的气势 */
-        color: #BCAAA4 !important; /* 未选中时，颜色稍微淡一点 */
+        font-size: 1.3rem !important;
+        font-weight: 600 !important;
+        color: #BCAAA4 !important;
         margin: 0 !important;
     }
 
@@ -222,7 +219,7 @@ st.markdown("""
         border-bottom: 4px solid #D47B55 !important;
     }
     
-    /* 🌟 被选中时，里面的文字颜色变醒目 */
+    /* 被选中时，里面的文字颜色变醒目 */
     button[data-baseweb="tab"][aria-selected="true"] p,
     button[data-baseweb="tab"][aria-selected="true"] span,
     button[data-baseweb="tab"][aria-selected="true"] div {
@@ -235,12 +232,10 @@ st.markdown("""
         margin-bottom: 1.5rem !important;
     }
     
-    /* 顺手把 Streamlit 可能自带的默认底层边框也彻底隐藏 */
     div[data-baseweb="tab-border"] {
         display: none !important;
     }
 
-    /* 主界面的按钮依然保持原本的高亮颜色 */
     .stTabs .stButton > button {
         background-color: #E28765 !important; 
         color: #FFFFFF !important;
@@ -275,7 +270,7 @@ st.markdown("""
         color: #4A3B32 !important;
     }
     
-    /* 7. 食材卡片基础样式 */
+    /* 食材卡片基础样式 */
     .ingredient-card {
         padding: 24px;
         border-radius: 24px;
@@ -296,20 +291,19 @@ st.markdown("""
     /* 灰色：已过期*/
     .card-expired { border-left: 8px solid #9E9E9E; background-color: #F5F5F5; opacity: 0.7; }
     
-    /* --- 8. 深度美化记忆输入框 (Text Area) --- */
+    /* 记忆输入框 */
     
     /* 定制输入框容器 */
     div[data-testid="stTextArea"] textarea {
         font-family: 'LXGW WenKai Lite', sans-serif !important;
-        font-size: 1.1rem !important;
+        font-size: 0.85rem !important;
         color: #5C4D4D !important;
-        background-color: #FCFAF7 !important; /* 极浅的米色背景 */
-        border: 2px dashed #E8DCC8 !important; /* 虚线边框，更有手账感 */
+        background-color: #FCFAF7 !important;
+        border: 2px dashed #E8DCC8 !important;
         border-radius: 15px !important;
         padding: 15px !important;
         transition: all 0.3s ease;
     }
-
 
     /* 输入框聚焦时的状态 */
     div[data-testid="stTextArea"] textarea:focus {
@@ -338,7 +332,7 @@ st.markdown("""
 st.markdown("<p class='remy-sub-title'>“用心对待每一顿饭，就是认真对待生活。”</p>", unsafe_allow_html=True)
 
 
-# --- 3. 状态管理 (Session State) ---
+# --- 状态管理 (Session State) ---
 if 'current_date' not in st.session_state:
     st.session_state.current_date = datetime.date.today()
 if 'inventory' not in st.session_state:
@@ -350,7 +344,7 @@ if 'shopping_list' not in st.session_state:
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
 
-# --- 4. 侧边栏：上传、备忘录、时光机测试 ---
+# --- 侧边栏：上传、备忘录、时光机测试 ---
 with st.sidebar:
     
     st.markdown("<h3 style='margin-bottom: 1rem; color:#8D7B68;'>Remy视察冰箱中👀</h3>", unsafe_allow_html=True)
