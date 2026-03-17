@@ -537,7 +537,7 @@ with tab1:
             col_idx += 1
 
 with tab2:
-    st.markdown("<h3 style='margin-bottom: 1.5rem;'>👨‍🍳 根据当前库存，Remy为您搭配</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='margin-bottom: 1.5rem;'>👨‍🍳 根据当前库存，REMY 为您搭配</h3>", unsafe_allow_html=True)
     if not st.session_state.recipes:
         st.write("冰箱里居然空空如也！快去买点吃的喝的，REMY 再为您定制菜单哦。")
     else:
