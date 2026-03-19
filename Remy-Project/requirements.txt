@@ -1,0 +1,14 @@
+# 核心 Web 框架
+streamlit
+
+# 谷歌 Gemini AI 官方 SDK
+google-genai
+
+# 图像处理库 (用于 PIL.Image)
+Pillow
+
+# 环境变量管理 (建议用于本地开发时读取 API Key)
+python-dotenv
+
+# 如果你的 remy-delivery-cli 是一个 python 包，请取消下行的注释
+# remy-delivery-cli
